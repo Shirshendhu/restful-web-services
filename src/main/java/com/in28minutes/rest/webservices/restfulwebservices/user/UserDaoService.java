@@ -2,6 +2,7 @@ package com.in28minutes.rest.webservices.restfulwebservices.user;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 
 import org.springframework.stereotype.Component;
@@ -25,15 +26,37 @@ public class UserDaoService {
     }
     //Ideally when new user is created, ID(primary key) is determined by backend/DB
     public User save(User user){
-        if(user.getId()==null){       //If it doesnt have ID, give an ID
+        if(user.getId()==null){       //If it doesn't have ID, give an ID
             user.setId(++usersCount);
         }
+        /*
+        else if(){
+            for(User userlist:users){
+                if(userlist.getId()==user.getId()){
+                    return user;
+                }
+            }
+            throw new RuntimeException(null);
+        }
+        */
         users.add(user);
         return user;
     }
     public User findOne(int id){
         for(User user:users){
             if(user.getId()==id){
+                return user;
+            }
+        }
+        return null;
+    }
+
+    public User deleteById(int id){
+        Iterator<User> iterator = users.iterator();
+        while(iterator.hasNext()){
+            User user=iterator.next();
+            if(user.getId()==id){
+                iterator.remove();
                 return user;
             }
         }
