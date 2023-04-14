@@ -2,6 +2,8 @@ package com.in28minutes.rest.webservices.restfulwebservices.user;
 
 import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import jakarta.validation.constraints.Past;
 import jakarta.validation.constraints.Size;
 
@@ -13,8 +15,11 @@ public class User {
     //hibernate validator implements validations defined here
     //These 2 jars are defined in spring boot web starter dependencies
     @Size(min=2,message="Name should have atleast 2 characters")
+    //Customizing display of name field in GET response
+    @JsonProperty("user_name")
     private String name;
     //Validating Birthdate should be in past
+    @JsonProperty("birth_date")
     @Past
     private Date birthDate;
 

@@ -3,7 +3,11 @@ package com.in28minutes.rest.webservices.restfulwebservices.user;
 import java.net.URI;
 import java.util.List;
 
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,10 +33,17 @@ public class UserResource {
         return service.findAll();
     }
 
+    //To show helpful links in response using hateos, EntityModel & WebMvcBuilder
+    //concepts needs to be known
+    //We want to send this response as part of user bean by not messing with current structure of every beans
+    //So, use of EntityModel is needed. Whenever using of hateos and adding links is reqd.
+    //We need to wrap the user in EntityModel
+
+
     //GET /users/{id}
     //retrieveUser(int id)
     @GetMapping("/users/{id}")
-    public User retrieveUser(@PathVariable int id){
+    public EntityModel<User> retrieveUser(@PathVariable int id){
         User user = service.findOne(id);
         if(user==null){
             throw new UserNotFoundException("id-"+id);
@@ -51,7 +62,16 @@ public class UserResource {
 
         //return resource which has both data and links instead of just that specific user
         //return resource;
-        return user;
+        //return user;
+
+        //Wrapping User class inside EntityModel to use same user response with links with help of hateos
+        EntityModel<User> entityModel=EntityModel.of(user);
+        //Now to add links in this entitymodel wrapped user, we need to use WebMvcLinkBuilder
+        //Instead of hardcoding the link here, using the specific method and linkTo to get the link
+        WebMvcLinkBuilder link=linkTo(methodOn(this.getClass()).retrieveAllUsers());
+        //WebMvcLinkBuilder link=linkTo(methodOn(null,null));
+        entityModel.add(link.withRel("all-users"));
+        return entityModel;
     }
 
     //output-CREATED response code & Return the created URI
